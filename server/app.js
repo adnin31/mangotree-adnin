@@ -1,41 +1,32 @@
-const express = require('express')
-const app = express()
-const cron = require('node-cron');
-const MangoTree = require('./helper/mangotree')
-var firebase = require('firebase');
-var config = {
-    apiKey: "AIzaSyDn1TEJlick5eX6QUdyT3i1jyd7GNhFC7c",
-    authDomain: "pohon-mangga.firebaseapp.com",
-    databaseURL: "https://pohon-mangga.firebaseio.com",
-    projectId: "pohon-mangga",
-};
-firebase.initializeApp(config);
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var cors = require('cors')
 
-let mangoTree = new MangoTree();
-var database = firebase.database();
 
-var task = cron.schedule('*/2 * * * * *', function(){
-  if (mangoTree.healthyStatus != false) {
-    mangoTree.grow();
-    mangoTree.produceMangoes();
-    mangoTree.harvest();
-    database.ref('mangga').set({
-      umur: mangoTree.age,
-      tinggi: mangoTree.height,
-      harvested: mangoTree.harvested
-    });
-    console.log(`[Year ${mangoTree.age} Report] Height = ${mangoTree.height} | Fruits harvested = ${mangoTree.harvested}`)
-  }
-  else {
-    console.log('The mango tree has met its end. :sad:\n');
-    task.stop();
-  }
-});
+var index = require('./routes/index');
+var users = require('./routes/users');
 
-app.get('/', function (req, res) {
-  task.start()
-})
+var app = express();
+app.use(cors())
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
-})
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', index);
+app.use('/users', users);
+
+
+module.exports = app;

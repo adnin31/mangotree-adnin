@@ -1,11 +1,12 @@
 <template>
   <div id="app">
-    <p>  Umur : {{buahMangga.umur}} </p>
-    <p> Buah Mangga : {{ buahMangga.harvested }} </p>
-    <p> Tinggi : {{buahMangga.tinggi}} </p>
-
-
-
+      <h1>Ini Aplikasi Memakai Cron click start untuk menghidupkan pohon</h1>
+      <button type="button" name="button" class="btn btn-primary" @click="startMangga">Start</button>
+      <br><br>
+      <p>  Umur : {{buahMangga.umur}} </p>
+      <p> Buah Mangga : {{ buahMangga.harvested }} </p>
+      <p> Tinggi : {{buahMangga.tinggi}} </p>
+      <p>{{buahMangga.status}}</p>
   </div>
 </template>
 
@@ -13,6 +14,7 @@
 import Vue from 'vue'
 import VueFire from 'vuefire'
 import firebase from 'firebase'
+import axios from 'axios'
 Vue.use(VueFire)
 
 var config = {
@@ -37,6 +39,11 @@ export default {
         source: db.ref('mangga'),
         asObject: true
       }
+    }
+  },
+  methods: {
+    startMangga () {
+      axios.get('http://localhost:3000/').then(res => console.log(res.data))
     }
   }
 
